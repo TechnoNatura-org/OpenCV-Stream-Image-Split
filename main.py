@@ -1,50 +1,91 @@
 import cv2
 import argparse
+from PIL import Image
+from glob import glob as g
+import os
 
 def main():
     parser = argparse.ArgumentParser(description="OpenCV Stream Image Split")
 
     # Add arguments to the parser
     parser.add_argument('-s', '--source', default=0, help="Your webcam input or video", required=True)
-    parser.add_argument('-f', '--frame', help="Capture every specified frame", type=int, required=True)
-    parser.add_argument('-n', '--name', help="Generated image name", type=str, required=False)
+    parser.add_argument('-f', '--frame', type=int, help="Capture every specified frame", required=True)
+    parser.add_argument('-v', '--videoformat', type=str, help="Video format (mp4, mov).", required=True)
+    parser.add_argument("--xoff", type=int, default=250, help="offset left")
+    parser.add_argument("--yoff", type=int, default=0, help="offset right")
 
-    # Parse the command-line arguments
     args = parser.parse_args()
 
+    x = args.xoff
+    y = args.yoff
+
+    left = x
+    top = y
+    right = left + 480
+    bottom = top + 480
+
+    # Parse the command-line arguments
+
     # Access the values of the parsed arguments
-    sourceArg = args.source
     frameArg = args.frame
-    nameArg = args.name
+    videoFormatArg = args.videoformat
 
 
-    cam = cv2.VideoCapture(sourceArg)
     frameNum = 0
     # i = 0
     j = 0
-    isCaptured = True
-    while True:
-        isCapture, frame = cam.read()
+
+    videoFormatPath = "*" + "." + videoFormatArg
+
+    print(videoFormatPath)
+    for gile in g(videoFormatPath):
+        gfile = gile
+        # print(gile)
+        cam = cv2.VideoCapture(gfile)
+        n_path = str(gfile)[0:][:-4]
+        path = n_path + "/"
 
         # print(isCapture)
+        os.makedirs(path, exist_ok=True)
+        frameNum = 0
+        # i = 0
+        j = 0
+        
+        while True:
+            isCapture, frame = cam.read()
 
-        print(frameNum)
-        if not isCapture:
-            # no more frame, exit loop
-            break
+            # print(isCapture)
+            if not isCapture:
+                # no more frame, exit loop
+                break
 
-        if frameNum == frameArg: 
-            j = j+1
+            if frameNum == frameArg: 
+                j = j+1
 
-            generatedImageName = "image"
-            if nameArg is not None:
-                generatedImageName = nameArg
-            fileName = f"{generatedImageName}"
-            fileName = fileName + '-{:d}.jpg'.format(j)
-            cv2.imwrite(filename=fileName,img=frame)
-            frameNum = 0
+                generatedImageName = "image"
 
-        frameNum = frameNum + 1
+                fileName = f"{generatedImageName}"
+
+                fileName = path+n_path + '-{:d}.jpg'.format(j)
+                # print(fileName)
+                cv2.imwrite(filename=fileName,img=frame)
+                frameNum = 0
+
+            frameNum = frameNum + 1
+
+        im_count = 0
+        # print(n_path)
+        for file in g(path + "*.jpg"):
+            # print(file)
+            nfile = str(file)
+            # print(nfile)
+            #imposter.open(nfile).resize([4320, 2880], 1)
+            Image.open(nfile).crop((left, top, right, bottom)).save(nfile) #left, top, right, bottom
+            if im_count < 12:
+                im_count+=1
+            else:
+                print("seventh done")
+                im_count = 0
 
         
         # fileName = 'img{:d}.jpg'.format(frameNum)
