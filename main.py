@@ -8,7 +8,6 @@ def main():
     parser = argparse.ArgumentParser(description="OpenCV Stream Image Split")
 
     # Add arguments to the parser
-    parser.add_argument('-s', '--source', default=0, help="Your webcam input or video", required=True)
     parser.add_argument('-f', '--frame', type=int, help="Capture every specified frame", required=True)
     parser.add_argument('-v', '--videoformat', type=str, help="Video format (mp4, mov).", required=True)
     parser.add_argument("--xoff", type=int, default=250, help="offset left")
