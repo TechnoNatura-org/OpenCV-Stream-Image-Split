@@ -20,8 +20,8 @@ def main():
 
     left = x
     top = y
-    right = left + 480
-    bottom = top + 480
+    right = left + 640
+    bottom = top + 640
 
     # Parse the command-line arguments
 
